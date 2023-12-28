@@ -73,3 +73,27 @@ class FocalLoss(nn.Module):
         return torchvision.ops.focal_loss.sigmoid_focal_loss(pred, target,alpha=self.alpha,gamma=self.gamma,reduction=self.reduction)
 
 
+class FocalLoss_learnable(nn.Module):
+    def __init__(self,num_tasks=25,alpha=-1,init_gamma=2,reduction='mean',device='cpu'):
+        super().__init__()
+        self.alpha = alpha
+        self.log_gamma = torch.nn.Parameter(torch.zeros(num_tasks, requires_grad=True, dtype=torch.float32, device=device)) 
+        self.reduction = reduction
+
+    def forward(self, pred, target):
+        self.gamma = torch.exp(self.log_gamma)
+        return torchvision.ops.focal_loss.sigmoid_focal_loss(pred, target,alpha=self.alpha,gamma=self.gamma,reduction=self.reduction) + 0.5 * torch.mean(self.log_gamma)
+
+
+class MultiLoss(torch.nn.Module):
+    def __init__(self, num_tasks=25, device='cpu'):
+        super().__init__()
+        self.log_var = torch.nn.Parameter(torch.zeros(num_tasks, requires_grad=True, dtype=torch.float32, device=device)) 
+
+    def forward(self, pred, target):
+        self.sigmas_sq = torch.exp(-self.log_var)
+        losses = F.binary_cross_entropy(pred, target, reduction='none')
+        losses = torch.mean(losses, axis=0)
+        loss = losses * self.sigmas_sq + 0.5 * self.log_var
+        loss = torch.mean(loss)
+        return loss

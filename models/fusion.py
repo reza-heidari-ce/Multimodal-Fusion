@@ -8,9 +8,9 @@ from .loss import RankingLoss, CosineLoss, KLDivLoss
 import torch.nn.functional as F
 
 
-def get_torch_trans(heads=1, layers=1, d_model=32):
+def get_torch_trans(heads=4, layers=1, d_model=64):
     encoder_layer = nn.TransformerEncoderLayer(
-        d_model=d_model, nhead=heads, dim_feedforward=128, batch_first=True
+        d_model=d_model, nhead=heads, dim_feedforward=1024, batch_first=True
     )
     return nn.TransformerEncoder(encoder_layer, num_layers=layers)
 
@@ -49,7 +49,7 @@ class Fusion(nn.Module):
 
         
         #self.attn_layer = nn.MultiheadAttention(lstm_in, num_heads=4, batch_first=True)
-        self.attn_layer = get_torch_trans(heads=1, layers=2, d_model=lstm_in)
+        self.attn_layer = get_torch_trans(heads=8, layers=2, d_model=lstm_in)
 
         self.attn_fused_cls =  nn.Sequential(
             nn.Linear(feats_dim, target_classes),
@@ -61,6 +61,11 @@ class Fusion(nn.Module):
             nn.Sigmoid()
         ) 
 
+        if self.args.loss == 'focal_loss':
+            self.attn_fused_cls =  nn.Sequential(
+                nn.Linear(feats_dim, target_classes))
+            self.lstm_fused_cls =  nn.Sequential(
+                nn.Linear(lstm_out, target_classes))
 
         self.lstm_fusion_layer = nn.LSTM(
             lstm_in, lstm_out,
@@ -147,7 +152,7 @@ class Fusion(nn.Module):
 
         
         feats = self.attn_layer(feats)
-        feats = attn_feats + feats
+        #feats = attn_feats + feats
         
         feats = feats.reshape(feats.shape[0], -1)    
         fused_preds = self.attn_fused_cls(feats)
