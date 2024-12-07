@@ -8,9 +8,10 @@ encoder (e.g. a ResNet model) to extract features from our image modality and an
 LSTM network to extract latent feature representation from our time-series modality.
 We then utilize a projection layer to project the image embeddings to the time-series
 embedding dimension. Finally, we concatenate these feature representations and feed
-them to a Transformer encoder.
+them to a Transformer encoder. Finally Our models is trained using a multi-task uncertainty loss.
 
 ![](figs/model_architecture.png)
+![](figs/loss_uncertainty.jpg)
 
 
 Dataset
