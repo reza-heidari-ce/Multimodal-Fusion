@@ -1,5 +1,5 @@
-# multimodal-clinical
-Code for Multimodal Healthcare Data Analysis for Enhanced Diagnostics and Patient Care.
+# multimodal-fusion
+code for Robust Fusion of Time Series and Image Data for Improved Multimodal Clinical Prediction
 
 ## A Quick Overview 
 Our proposed model consists of two major parts: modality-specific encoders and a
@@ -61,3 +61,7 @@ sh ./scripts/phenotyping/eval/attention_partial.sh
 
 ## Cite
 If you find this code useful, please cite
+```
+A. Rasekh et al., "Robust Fusion of Time Series and Image Data for Improved Multimodal Clinical Prediction," in IEEE Access, vol. 12, pp. 174107-174121, 2024, doi: 10.1109/ACCESS.2024.3497668.
+keywords: {Deep learning;Visualization;Uncertainty;Codes;Fuses;MIMICs;Time series analysis;Predictive models;Data models;Noise measurement;Multimodal learning;time series;attention mechanism;robustness;phenotyping},
+```
